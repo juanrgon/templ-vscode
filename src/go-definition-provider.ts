@@ -19,22 +19,27 @@ export class TemplGoDefinitionProvider implements vscode.DefinitionProvider {
       const definitions = await this.getDefinitions(document, position);
       if (!definitions) return null;
 
-      const definition = definitions[0];
-      if (!this.isTemplGoFile(definition.uri.fsPath)) {
-        return definitions;
+      // Check each definition to see if any point to _templ.go files
+      for (const definition of definitions) {
+        if (this.isTemplGoFile(definition.uri.fsPath)) {
+          const templFilePath = this.deriveTemplFilePath(definition.uri.fsPath);
+          if (fs.existsSync(templFilePath)) {
+            const templResult = await this.handleTemplFile(
+              templFilePath,
+              document,
+              position,
+              definitions,
+            );
+            if (templResult) {
+              // Return only the .templ file location, not the _templ.go file
+              return templResult;
+            }
+          }
+        }
       }
 
-      const templFilePath = this.deriveTemplFilePath(definition.uri.fsPath);
-      if (!fs.existsSync(templFilePath)) {
-        return definitions;
-      }
-
-      return this.handleTemplFile(
-        templFilePath,
-        document,
-        position,
-        definitions,
-      );
+      // If no _templ.go files were found, return the original definitions
+      return definitions;
     } finally {
       this.isRecursing = false;
     }
