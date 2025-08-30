@@ -1,14 +1,15 @@
 {
   "name": "templ",
   "displayName": "templ-vscode",
-  "description": "Provides syntax highlighting and templ LSP integration.",
+  "description": "Provides syntax highlighting, templ LSP integration, and Go to Definition from Go files to templ templates.",
   "publisher": "a-h",
   "icon": "templ.png",
   "repository": {
     "url": "https://github.com/a-h/templ-vscode"
   },
   "activationEvents": [
-    "workspaceContains:**/*.templ"
+    "workspaceContains:**/*.templ",
+    "onLanguage:go"
   ],
   "main": "./dist/main.js",
   "version": "0.0.35",

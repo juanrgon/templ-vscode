@@ -19,6 +19,7 @@ import path from "path";
 import { LanguageClient } from "vscode-languageclient/node";
 import { lookpath } from "lookpath";
 import { CustomLanguageClient } from "./custom-client";
+import { TemplGoDefinitionProvider } from "./go-definition-provider";
 
 export async function activate(ctx: vscode.ExtensionContext) {
   try {
@@ -26,6 +27,15 @@ export async function activate(ctx: vscode.ExtensionContext) {
       vscode.commands.registerCommand(
         "templ.restartServer",
         startLanguageClient,
+      ),
+    );
+
+    // Register Go definition provider for templ function navigation
+    const goDefinitionProvider = new TemplGoDefinitionProvider();
+    ctx.subscriptions.push(
+      vscode.languages.registerDefinitionProvider(
+        { language: "go" },
+        goDefinitionProvider,
       ),
     );
 
